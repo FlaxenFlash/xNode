@@ -6,32 +6,36 @@ using UnityEngine;
 namespace XNodeEditor {
     /// <summary> xNode-specific version of <see cref="EditorGUILayout"/> </summary>
     public static class NodeEditorGUILayout {
+        private static GUIStyle editorStyleCache;
 
         /// <summary> Make a field for a serialized property. Automatically displays relevant node port. </summary>
-        public static void PropertyField(SerializedProperty property, bool includeChildren = true, params GUILayoutOption[] options) {
-            PropertyField(property, (GUIContent) null, includeChildren, options);
+        public static void PropertyField(SerializedProperty property, bool includeChildren = true, GUIStyle style = null, params GUILayoutOption[] options) {
+            PropertyField(property, (GUIContent) null, includeChildren, style, options);
         }
 
         /// <summary> Make a field for a serialized property. Automatically displays relevant node port. </summary>
-        public static void PropertyField(SerializedProperty property, GUIContent label, bool includeChildren = true, params GUILayoutOption[] options) {
+        public static void PropertyField(SerializedProperty property, GUIContent label, bool includeChildren = true, GUIStyle style = null, params GUILayoutOption[] options) {
             if (property == null) throw new NullReferenceException();
             XNode.Node node = property.serializedObject.targetObject as XNode.Node;
             XNode.NodePort port = node.GetPort(property.name);
-            PropertyField(property, label, port, includeChildren);
+            PropertyField(property, label, port, includeChildren, style, options);
         }
 
         /// <summary> Make a field for a serialized property. Manual node port override. </summary>
-        public static void PropertyField(SerializedProperty property, XNode.NodePort port, bool includeChildren = true, params GUILayoutOption[] options) {
-            PropertyField(property, null, port, includeChildren, options);
+        public static void PropertyField(SerializedProperty property, XNode.NodePort port, bool includeChildren = true, GUIStyle style = null, params GUILayoutOption[] options) {
+            PropertyField(property, null, port, includeChildren, style, options);
         }
 
         /// <summary> Make a field for a serialized property. Manual node port override. </summary>
-        public static void PropertyField(SerializedProperty property, GUIContent label, XNode.NodePort port, bool includeChildren = true, params GUILayoutOption[] options) {
+        public static void PropertyField(SerializedProperty property, GUIContent label, XNode.NodePort port, bool includeChildren = true, GUIStyle style = null, params GUILayoutOption[] options) {
             if (property == null) throw new NullReferenceException();
 
             // If property is not a port, display a regular property field
-            if (port == null) EditorGUILayout.PropertyField(property, label, includeChildren, GUILayout.MinWidth(30));
-            else {
+            if (port == null) {
+                if (style != null) SetEditorLabel(style);
+                EditorGUILayout.PropertyField(property, label, includeChildren, GUILayout.MinWidth(30));
+                if (style != null) RevertEditorLabel();
+            } else {
                 Rect rect = new Rect();
 
                 // If property is an input, display a regular property field and put a port handle on the left side
@@ -44,17 +48,26 @@ namespace XNodeEditor {
                     switch (showBacking) {
                         case XNode.Node.ShowBackingValue.Unconnected:
                             // Display a label if port is connected
-                            if (port.IsConnected) EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName));
-                            // Display an editable property field if port is not connected
-                            else EditorGUILayout.PropertyField(property, label, includeChildren, GUILayout.MinWidth(30));
+                            if (port.IsConnected) {
+                                if (style != null) EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName), style);
+                                else EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName));
+                            } // Display an editable property field if port is not connected
+                            else {
+                                if (style != null) SetEditorLabel(style);
+                                EditorGUILayout.PropertyField(property, label, includeChildren, GUILayout.MinWidth(30));
+                                if (style != null) RevertEditorLabel();
+                            }
                             break;
                         case XNode.Node.ShowBackingValue.Never:
                             // Display a label
-                            EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName));
+                            if (style != null) EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName), style);
+                            else EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName));
                             break;
                         case XNode.Node.ShowBackingValue.Always:
                             // Display an editable property field
+                            if (style != null) SetEditorLabel(style);
                             EditorGUILayout.PropertyField(property, label, includeChildren, GUILayout.MinWidth(30));
+                            if (style != null) RevertEditorLabel();
                             break;
                     }
 
@@ -70,17 +83,27 @@ namespace XNodeEditor {
                     switch (showBacking) {
                         case XNode.Node.ShowBackingValue.Unconnected:
                             // Display a label if port is connected
-                            if (port.IsConnected) EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName), NodeEditorResources.styles.outputPort, GUILayout.MinWidth(30));
+                            if (port.IsConnected) {
+                                if (style != null) EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName), GetOutputStyle(style), GUILayout.MinWidth(30));
+                                else EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName), NodeEditorResources.styles.outputPort, GUILayout.MinWidth(30));
+                            }
                             // Display an editable property field if port is not connected
-                            else EditorGUILayout.PropertyField(property, label, includeChildren, GUILayout.MinWidth(30));
+                            else {
+                                if (style != null) SetEditorLabel(style);
+                                EditorGUILayout.PropertyField(property, label, includeChildren, GUILayout.MinWidth(30));
+                                if (style != null) RevertEditorLabel();
+                            }
                             break;
                         case XNode.Node.ShowBackingValue.Never:
                             // Display a label
-                            EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName), NodeEditorResources.styles.outputPort, GUILayout.MinWidth(30));
+                            if (style != null) EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName), GetOutputStyle(style), GUILayout.MinWidth(30));
+                            else EditorGUILayout.LabelField(label != null ? label : new GUIContent(property.displayName), NodeEditorResources.styles.outputPort, GUILayout.MinWidth(30));
                             break;
                         case XNode.Node.ShowBackingValue.Always:
                             // Display an editable property field
+                            if (style != null) SetEditorLabel(style);
                             EditorGUILayout.PropertyField(property, label, includeChildren, GUILayout.MinWidth(30));
+                            if (style != null) RevertEditorLabel();
                             break;
                     }
 
@@ -128,11 +151,44 @@ namespace XNodeEditor {
             else NodeEditor.portPositions.Add(port, portPos);
         }
 
+        private static void SetEditorLabel(GUIStyle style) {
+            if (editorStyleCache == null) {
+                editorStyleCache = new GUIStyle(EditorStyles.label);
+            }
+            EditorStyles.label.normal = style.normal;
+            EditorStyles.label.onNormal = style.onNormal;
+            EditorStyles.label.hover = style.hover;
+            EditorStyles.label.onHover = style.onHover;
+            EditorStyles.label.active = style.active;
+            EditorStyles.label.onActive = style.onActive;
+            EditorStyles.label.onFocused = style.onFocused;
+            EditorStyles.label.focused = style.focused;
+        }
+
+        private static void RevertEditorLabel() {
+            if (editorStyleCache == null) return;
+            EditorStyles.label.normal = editorStyleCache.normal;
+            EditorStyles.label.onNormal = editorStyleCache.onNormal;
+            EditorStyles.label.hover = editorStyleCache.hover;
+            EditorStyles.label.onHover = editorStyleCache.onHover;
+            EditorStyles.label.active = editorStyleCache.active;
+            EditorStyles.label.onActive = editorStyleCache.onActive;
+            EditorStyles.label.onFocused = editorStyleCache.onFocused;
+            EditorStyles.label.focused = editorStyleCache.focused;
+        }
+
+        private static GUIStyle GetOutputStyle(GUIStyle style) {
+            GUIStyle outputStyle = new GUIStyle(style);
+            outputStyle.alignment = TextAnchor.UpperRight;
+            outputStyle.padding.right = 10;
+            return outputStyle;
+        }
+
         private static void DrawPortHandle(Rect rect, Color backgroundColor, Color typeColor) {
             Color col = GUI.color;
             GUI.color = backgroundColor;
             GUI.DrawTexture(rect, NodeEditorResources.dotOuter);
-            GUI.color =  typeColor;
+            GUI.color = typeColor;
             GUI.DrawTexture(rect, NodeEditorResources.dot);
             GUI.color = col;
         }

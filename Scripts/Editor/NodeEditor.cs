@@ -38,7 +38,7 @@ namespace XNodeEditor {
             while (iterator.NextVisible(enterChildren)) {
                 enterChildren = false;
                 if (excludes.Contains(iterator.name)) continue;
-                NodeEditorGUILayout.PropertyField(iterator, true);
+                NodeEditorGUILayout.PropertyField(iterator, true, GetGUIStyle(iterator.name));
             }
         }
 
@@ -50,6 +50,11 @@ namespace XNodeEditor {
             Type type = target.GetType();
             if (NodeEditorWindow.nodeTint.ContainsKey(type)) return NodeEditorWindow.nodeTint[type];
             else return Color.white;
+        }
+
+        /// <summary> Override this to change text color settings </summary>
+        public virtual GUIStyle GetGUIStyle(string fieldName) {
+            return null;
         }
 
         [AttributeUsage(AttributeTargets.Class)]
