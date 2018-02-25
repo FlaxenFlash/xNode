@@ -13,10 +13,10 @@ namespace XNodeEditor {
         private bool IsDraggingPort { get { return draggedOutput != null; } }
         private bool IsHoveringPort { get { return hoveredPort != null; } }
         private bool IsHoveringNode { get { return hoveredNode != null; } }
-        private XNode.Node hoveredNode = null;
-        [NonSerialized] private XNode.NodePort hoveredPort = null;
-        [NonSerialized] private XNode.NodePort draggedOutput = null;
-        [NonSerialized] private XNode.NodePort draggedOutputTarget = null;
+        private Siccity.XNode.Node hoveredNode = null;
+        [NonSerialized] private Siccity.XNode.NodePort hoveredPort = null;
+        [NonSerialized] private Siccity.XNode.NodePort draggedOutput = null;
+        [NonSerialized] private Siccity.XNode.NodePort draggedOutputTarget = null;
         private Rect nodeRects;
         private Vector2 dragBoxStart;
         private UnityEngine.Object[] preBoxSelection;
@@ -44,8 +44,8 @@ namespace XNodeEditor {
                             Repaint();
                         } else if (currentActivity == NodeActivity.HoldHeader || currentActivity == NodeActivity.DragHeader) {
                             for (int i = 0; i < Selection.objects.Length; i++) {
-                                if (Selection.objects[i] is XNode.Node) {
-                                    XNode.Node node = Selection.objects[i] as XNode.Node;
+                                if (Selection.objects[i] is Siccity.XNode.Node) {
+                                    Siccity.XNode.Node node = Selection.objects[i] as Siccity.XNode.Node;
                                     node.position = WindowToGridPosition(e.mousePosition) + dragOffset[i];
                                     bool gridSnap = NodeEditorPreferences.GetSettings().gridSnap;
                                     if (e.control) {
@@ -65,7 +65,7 @@ namespace XNodeEditor {
                             dragBoxStart = WindowToGridPosition(e.mousePosition);
                             Repaint();
                         } else if (currentActivity == NodeActivity.DragGrid) {
-                            foreach (XNode.Node node in graph.nodes) {
+                            foreach (Siccity.XNode.Node node in graph.nodes) {
 
                             }
                             Repaint();
@@ -90,8 +90,8 @@ namespace XNodeEditor {
                             } else {
                                 hoveredPort.VerifyConnections();
                                 if (hoveredPort.IsConnected) {
-                                    XNode.Node node = hoveredPort.node;
-                                    XNode.NodePort output = hoveredPort.Connection;
+                                    Siccity.XNode.Node node = hoveredPort.node;
+                                    Siccity.XNode.NodePort output = hoveredPort.Connection;
                                     hoveredPort.Disconnect(output);
                                     draggedOutput = output;
                                     draggedOutputTarget = hoveredPort;
@@ -106,8 +106,8 @@ namespace XNodeEditor {
                             currentActivity = NodeActivity.HoldHeader;
                             dragOffset = new Vector2[Selection.objects.Length];
                             for (int i = 0; i < dragOffset.Length; i++) {
-                                if (Selection.objects[i] is XNode.Node) {
-                                    XNode.Node node = Selection.objects[i] as XNode.Node;
+                                if (Selection.objects[i] is Siccity.XNode.Node) {
+                                    Siccity.XNode.Node node = Selection.objects[i] as Siccity.XNode.Node;
                                     dragOffset[i] = node.position - WindowToGridPosition(e.mousePosition);
                                 }
                             }
@@ -125,7 +125,7 @@ namespace XNodeEditor {
                         if (IsDraggingPort) {
                             //If connection is valid, save it
                             if (draggedOutputTarget != null) {
-                                XNode.Node node = draggedOutputTarget.node;
+                                Siccity.XNode.Node node = draggedOutputTarget.node;
                                 if (graph.nodes.Count != 0) draggedOutput.Connect(draggedOutputTarget);
                                 if (NodeEditor.onUpdateNode != null) NodeEditor.onUpdateNode(node);
                                 EditorUtility.SetDirty(graph);
@@ -187,7 +187,7 @@ namespace XNodeEditor {
         }
 
         public void CreateNode(Type type, Vector2 position) {
-            XNode.Node node = graph.AddNode(type);
+            Siccity.XNode.Node node = graph.AddNode(type);
             node.position = position;
             Repaint();
         }
@@ -195,8 +195,8 @@ namespace XNodeEditor {
         /// <summary> Remove nodes in the graph in Selection.objects</summary>
         public void RemoveSelectedNodes() {
             foreach (UnityEngine.Object item in Selection.objects) {
-                if (item is XNode.Node) {
-                    XNode.Node node = item as XNode.Node;
+                if (item is Siccity.XNode.Node) {
+                    Siccity.XNode.Node node = item as Siccity.XNode.Node;
                     graph.RemoveNode(node);
                 }
             }
@@ -205,12 +205,12 @@ namespace XNodeEditor {
         /// <summary> Dublicate selected nodes and select the dublicates </summary>
         public void DublicateSelectedNodes() {
             UnityEngine.Object[] newNodes = new UnityEngine.Object[Selection.objects.Length];
-            Dictionary<XNode.Node, XNode.Node> substitutes = new Dictionary<XNode.Node, XNode.Node>();
+            Dictionary<Siccity.XNode.Node, Siccity.XNode.Node> substitutes = new Dictionary<Siccity.XNode.Node, Siccity.XNode.Node>();
             for (int i = 0; i < Selection.objects.Length; i++) {
-                if (Selection.objects[i] is XNode.Node) {
-                    XNode.Node srcNode = Selection.objects[i] as XNode.Node;
+                if (Selection.objects[i] is Siccity.XNode.Node) {
+                    Siccity.XNode.Node srcNode = Selection.objects[i] as Siccity.XNode.Node;
                     if (srcNode.graph != graph) continue; // ignore nodes selected in another graph
-                    XNode.Node newNode = graph.CopyNode(srcNode);
+                    Siccity.XNode.Node newNode = graph.CopyNode(srcNode);
                     substitutes.Add(srcNode, newNode);
                     newNode.position = srcNode.position + new Vector2(30, 30);
                     newNodes[i] = newNode;
@@ -219,17 +219,17 @@ namespace XNodeEditor {
 
             // Walk through the selected nodes again, recreate connections, using the new nodes
             for (int i = 0; i < Selection.objects.Length; i++) {
-                if (Selection.objects[i] is XNode.Node) {
-                    XNode.Node srcNode = Selection.objects[i] as XNode.Node;
+                if (Selection.objects[i] is Siccity.XNode.Node) {
+                    Siccity.XNode.Node srcNode = Selection.objects[i] as Siccity.XNode.Node;
                     if (srcNode.graph != graph) continue; // ignore nodes selected in another graph
-                    foreach (XNode.NodePort port in srcNode.Ports) {
+                    foreach (Siccity.XNode.NodePort port in srcNode.Ports) {
                         for (int c = 0; c < port.ConnectionCount; c++) {
-                            XNode.NodePort inputPort = port.direction == XNode.NodePort.IO.Input ? port : port.GetConnection(c);
-                            XNode.NodePort outputPort = port.direction == XNode.NodePort.IO.Output ? port : port.GetConnection(c);
+                            Siccity.XNode.NodePort inputPort = port.direction == Siccity.XNode.NodePort.IO.Input ? port : port.GetConnection(c);
+                            Siccity.XNode.NodePort outputPort = port.direction == Siccity.XNode.NodePort.IO.Output ? port : port.GetConnection(c);
 
                             if (substitutes.ContainsKey(inputPort.node) && substitutes.ContainsKey(outputPort.node)) {
-                                XNode.Node newNodeIn = substitutes[inputPort.node];
-                                XNode.Node newNodeOut = substitutes[outputPort.node];
+                                Siccity.XNode.Node newNodeIn = substitutes[inputPort.node];
+                                Siccity.XNode.Node newNodeOut = substitutes[outputPort.node];
                                 newNodeIn.UpdateStaticPorts();
                                 newNodeOut.UpdateStaticPorts();
                                 inputPort = newNodeIn.GetInputPort(inputPort.fieldName);
@@ -255,7 +255,7 @@ namespace XNodeEditor {
             }
         }
 
-        bool IsHoveringTitle(XNode.Node node) {
+        bool IsHoveringTitle(Siccity.XNode.Node node) {
             Vector2 mousePos = Event.current.mousePosition;
             //Get node position
             Vector2 nodePos = GridToWindowPosition(node.position);

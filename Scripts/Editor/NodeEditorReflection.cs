@@ -18,15 +18,15 @@ namespace XNodeEditor {
 
         public static Type[] GetNodeTypes() {
             //Get all classes deriving from Node via reflection
-            return GetDerivedTypes(typeof(XNode.Node));
+            return GetDerivedTypes(typeof(Siccity.XNode.Node));
         }
 
         public static Dictionary<Type, Color> GetNodeTint() {
             Dictionary<Type, Color> tints = new Dictionary<Type, Color>();
             for (int i = 0; i < nodeTypes.Length; i++) {
-                var attribs = nodeTypes[i].GetCustomAttributes(typeof(XNode.Node.NodeTint), true);
+                var attribs = nodeTypes[i].GetCustomAttributes(typeof(Siccity.XNode.Node.NodeTint), true);
                 if (attribs == null || attribs.Length == 0) continue;
-                XNode.Node.NodeTint attrib = attribs[0] as XNode.Node.NodeTint;
+                Siccity.XNode.Node.NodeTint attrib = attribs[0] as Siccity.XNode.Node.NodeTint;
                 tints.Add(nodeTypes[i], attrib.color);
             }
             return tints;

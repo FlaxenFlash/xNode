@@ -7,12 +7,12 @@ using UnityEngine;
 namespace XNodeEditor {
     /// <summary> Base class to derive custom Node editors from. Use this to create your own custom inspectors and editors for your nodes. </summary>
 
-    [CustomNodeEditor(typeof(XNode.Node))]
-    public class NodeEditor : XNodeEditor.Internal.NodeEditorBase<NodeEditor, NodeEditor.CustomNodeEditorAttribute, XNode.Node> {
+    [CustomNodeEditor(typeof(Siccity.XNode.Node))]
+    public class NodeEditor : XNodeEditor.Internal.NodeEditorBase<NodeEditor, NodeEditor.CustomNodeEditorAttribute, Siccity.XNode.Node> {
 
         /// <summary> Fires every whenever a node was modified through the editor </summary>
-        public static Action<XNode.Node> onUpdateNode;
-        public static Dictionary<XNode.NodePort, Vector2> portPositions;
+        public static Action<Siccity.XNode.Node> onUpdateNode;
+        public static Dictionary<Siccity.XNode.NodePort, Vector2> portPositions;
 
         /// <summary> Draws the node GUI.</summary>
         /// <param name="portPositions">Port handle positions need to be returned to the NodeEditorWindow </param>
@@ -30,7 +30,7 @@ namespace XNodeEditor {
         /// <summary> Draws standard field editors for all public fields </summary>
         public virtual void OnBodyGUI() {
             string[] excludes = { "m_Script", "graph", "position", "ports" };
-            portPositions = new Dictionary<XNode.NodePort, Vector2>();
+            portPositions = new Dictionary<Siccity.XNode.NodePort, Vector2>();
 
             SerializedProperty iterator = serializedObject.GetIterator();
             bool enterChildren = true;
@@ -54,7 +54,7 @@ namespace XNodeEditor {
 
         [AttributeUsage(AttributeTargets.Class)]
         public class CustomNodeEditorAttribute : Attribute,
-            XNodeEditor.Internal.NodeEditorBase<NodeEditor, NodeEditor.CustomNodeEditorAttribute, XNode.Node>.INodeEditorAttrib {
+            XNodeEditor.Internal.NodeEditorBase<NodeEditor, NodeEditor.CustomNodeEditorAttribute, Siccity.XNode.Node>.INodeEditorAttrib {
             private Type inspectedType;
             /// <summary> Tells a NodeEditor which Node type it is an editor for </summary>
             /// <param name="inspectedType">Type that this editor can edit</param>

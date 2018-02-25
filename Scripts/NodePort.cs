@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace XNode {
+namespace Siccity.XNode {
     [Serializable]
     public class NodePort {
         public enum IO { Input, Output }

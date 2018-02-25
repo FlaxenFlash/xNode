@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace XNodeEditor {
     /// <summary> Base class to derive custom Node Graph editors from. Use this to override how graphs are drawn in the editor. </summary>
-    [CustomNodeGraphEditor(typeof(XNode.NodeGraph))]
-    public class NodeGraphEditor : XNodeEditor.Internal.NodeEditorBase<NodeGraphEditor, NodeGraphEditor.CustomNodeGraphEditorAttribute, XNode.NodeGraph> {
+    [CustomNodeGraphEditor(typeof(Siccity.XNode.NodeGraph))]
+    public class NodeGraphEditor : XNodeEditor.Internal.NodeEditorBase<NodeGraphEditor, NodeGraphEditor.CustomNodeGraphEditorAttribute, Siccity.XNode.NodeGraph> {
         /// <summary> Custom node editors defined with [CustomNodeGraphEditor] </summary>
         [NonSerialized] private static Dictionary<Type, NodeGraphEditor> editors;
 
@@ -27,7 +27,7 @@ namespace XNodeEditor {
         /// <summary> Returns context menu path. Returns null if node is not available. </summary>
         public virtual string GetNodePath(Type type) {
             //Check if type has the CreateNodeMenuAttribute
-            XNode.Node.CreateNodeMenuAttribute attrib;
+            Siccity.XNode.Node.CreateNodeMenuAttribute attrib;
             if (NodeEditorUtilities.GetAttrib(type, out attrib)) // Return custom path
                 return attrib.menuName;
             else // Return generated path
@@ -40,7 +40,7 @@ namespace XNodeEditor {
 
         [AttributeUsage(AttributeTargets.Class)]
         public class CustomNodeGraphEditorAttribute : Attribute,
-            XNodeEditor.Internal.NodeEditorBase<NodeGraphEditor, NodeGraphEditor.CustomNodeGraphEditorAttribute, XNode.NodeGraph>.INodeEditorAttrib {
+            XNodeEditor.Internal.NodeEditorBase<NodeGraphEditor, NodeGraphEditor.CustomNodeGraphEditorAttribute, Siccity.XNode.NodeGraph>.INodeEditorAttrib {
             private Type inspectedType;
             public string editorPrefsKey;
             /// <summary> Tells a NodeGraphEditor which Graph type it is an editor for </summary>

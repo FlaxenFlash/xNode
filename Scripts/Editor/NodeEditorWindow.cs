@@ -9,11 +9,11 @@ namespace XNodeEditor {
         public static NodeEditorWindow current;
 
         /// <summary> Stores node positions for all nodePorts. </summary>
-        public Dictionary<XNode.NodePort, Rect> portConnectionPoints { get { return _portConnectionPoints; } }
-        private Dictionary<XNode.NodePort, Rect> _portConnectionPoints = new Dictionary<XNode.NodePort, Rect>();
-        public Dictionary<XNode.Node, float> nodeWidths { get { return _nodeWidths; } }
-        private Dictionary<XNode.Node, float> _nodeWidths = new Dictionary<XNode.Node, float>();
-        public XNode.NodeGraph graph;
+        public Dictionary<Siccity.XNode.NodePort, Rect> portConnectionPoints { get { return _portConnectionPoints; } }
+        private Dictionary<Siccity.XNode.NodePort, Rect> _portConnectionPoints = new Dictionary<Siccity.XNode.NodePort, Rect>();
+        public Dictionary<Siccity.XNode.Node, float> nodeWidths { get { return _nodeWidths; } }
+        private Dictionary<Siccity.XNode.Node, float> _nodeWidths = new Dictionary<Siccity.XNode.Node, float>();
+        public Siccity.XNode.NodeGraph graph;
         public Vector2 panOffset { get { return _panOffset; } set { _panOffset = value; Repaint(); } }
         private Vector2 _panOffset;
         public float zoom { get { return _zoom; } set { _zoom = Mathf.Clamp(value, 1f, 5f); Repaint(); } }
@@ -45,7 +45,7 @@ namespace XNodeEditor {
             string path = EditorUtility.SaveFilePanelInProject("Save NodeGraph", "NewNodeGraph", "asset", "");
             if (string.IsNullOrEmpty(path)) return;
             else {
-                XNode.NodeGraph existingGraph = AssetDatabase.LoadAssetAtPath<XNode.NodeGraph>(path);
+                Siccity.XNode.NodeGraph existingGraph = AssetDatabase.LoadAssetAtPath<Siccity.XNode.NodeGraph>(path);
                 if (existingGraph != null) AssetDatabase.DeleteAsset(path);
                 AssetDatabase.CreateAsset(graph, path);
                 EditorUtility.SetDirty(graph);
@@ -77,7 +77,7 @@ namespace XNodeEditor {
             return new Vector2(xOffset, yOffset);
         }
 
-        public void SelectNode(XNode.Node node, bool add) {
+        public void SelectNode(Siccity.XNode.Node node, bool add) {
             if (add) {
                 List<Object> selection = new List<Object>(Selection.objects);
                 selection.Add(node);
@@ -85,7 +85,7 @@ namespace XNodeEditor {
             } else Selection.objects = new Object[] { node };
         }
 
-        public void DeselectNode(XNode.Node node) {
+        public void DeselectNode(Siccity.XNode.Node node) {
             List<Object> selection = new List<Object>(Selection.objects);
             selection.Remove(node);
             Selection.objects = selection.ToArray();
@@ -93,7 +93,7 @@ namespace XNodeEditor {
 
         [OnOpenAsset(0)]
         public static bool OnOpen(int instanceID, int line) {
-            XNode.NodeGraph nodeGraph = EditorUtility.InstanceIDToObject(instanceID) as XNode.NodeGraph;
+            Siccity.XNode.NodeGraph nodeGraph = EditorUtility.InstanceIDToObject(instanceID) as Siccity.XNode.NodeGraph;
             if (nodeGraph != null) {
                 NodeEditorWindow w = GetWindow(typeof(NodeEditorWindow), false, "xNode", true) as NodeEditorWindow;
                 w.wantsMouseMove = true;

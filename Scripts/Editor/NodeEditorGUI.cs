@@ -91,8 +91,8 @@ namespace XNodeEditor {
         public void ShowNodeContextMenu() {
             GenericMenu contextMenu = new GenericMenu();
             // If only one node is selected
-            if (Selection.objects.Length == 1 && Selection.activeObject is XNode.Node) {
-                XNode.Node node = Selection.activeObject as XNode.Node;
+            if (Selection.objects.Length == 1 && Selection.activeObject is Siccity.XNode.Node) {
+                Siccity.XNode.Node node = Selection.activeObject as Siccity.XNode.Node;
                 contextMenu.AddItem(new GUIContent("Move To Top"), false, () => {
                     int index;
                     while ((index = graph.nodes.IndexOf(node)) != graph.nodes.Count - 1) {
@@ -106,8 +106,8 @@ namespace XNodeEditor {
             contextMenu.AddItem(new GUIContent("Remove"), false, RemoveSelectedNodes);
 
             // If only one node is selected
-            if (Selection.objects.Length == 1 && Selection.activeObject is XNode.Node) {
-                XNode.Node node = Selection.activeObject as XNode.Node;
+            if (Selection.objects.Length == 1 && Selection.activeObject is Siccity.XNode.Node) {
+                Siccity.XNode.Node node = Selection.activeObject as Siccity.XNode.Node;
                 AddCustomContextMenuItems(contextMenu, node);
             }
 
@@ -199,17 +199,17 @@ namespace XNodeEditor {
 
         /// <summary> Draws all connections </summary>
         public void DrawConnections() {
-            foreach (XNode.Node node in graph.nodes) {
+            foreach (Siccity.XNode.Node node in graph.nodes) {
                 //If a null node is found, return. This can happen if the nodes associated script is deleted. It is currently not possible in Unity to delete a null asset.
                 if (node == null) continue;
 
-                foreach (XNode.NodePort output in node.Outputs) {
+                foreach (Siccity.XNode.NodePort output in node.Outputs) {
                     //Needs cleanup. Null checks are ugly
                     if (!portConnectionPoints.ContainsKey(output)) continue;
                     Vector2 from = _portConnectionPoints[output].center;
                     for (int k = 0; k < output.ConnectionCount; k++) {
 
-                        XNode.NodePort input = output.GetConnection(k);
+                        Siccity.XNode.NodePort input = output.GetConnection(k);
                         if (input == null) continue; //If a script has been updated and the port doesn't exist, it is removed and null is returned. If this happens, return.
                         if (!input.IsConnectedTo(output)) input.Connect(output);
                         if (!_portConnectionPoints.ContainsKey(input)) continue;
@@ -234,7 +234,7 @@ namespace XNodeEditor {
             //Active node is hashed before and after node GUI to detect changes
             int nodeHash = 0;
             System.Reflection.MethodInfo onValidate = null;
-            if (Selection.activeObject != null && Selection.activeObject is XNode.Node) {
+            if (Selection.activeObject != null && Selection.activeObject is Siccity.XNode.Node) {
                 onValidate = Selection.activeObject.GetType().GetMethod("OnValidate");
                 if (onValidate != null) nodeHash = Selection.activeObject.GetHashCode();
             }
@@ -256,10 +256,10 @@ namespace XNodeEditor {
                 // Skip null nodes. The user could be in the process of renaming scripts, so removing them at this point is not advisable.
                 if (graph.nodes[n] == null) continue;
                 if (n >= graph.nodes.Count) return;
-                XNode.Node node = graph.nodes[n];
+                Siccity.XNode.Node node = graph.nodes[n];
 
                 NodeEditor nodeEditor = NodeEditor.GetEditor(node);
-                NodeEditor.portPositions = new Dictionary<XNode.NodePort, Vector2>();
+                NodeEditor.portPositions = new Dictionary<Siccity.XNode.NodePort, Vector2>();
 
                 //Get node position
                 Vector2 nodePos = GridToWindowPositionNoClipped(node.position);
@@ -329,14 +329,14 @@ namespace XNodeEditor {
 
                     //Check if we are hovering any of this nodes ports
                     //Check input ports
-                    foreach (XNode.NodePort input in node.Inputs) {
+                    foreach (Siccity.XNode.NodePort input in node.Inputs) {
                         //Check if port rect is available
                         if (!portConnectionPoints.ContainsKey(input)) continue;
                         Rect r = GridToWindowRect(portConnectionPoints[input]);
                         if (r.Contains(mousePos)) hoveredPort = input;
                     }
                     //Check all output ports
-                    foreach (XNode.NodePort output in node.Outputs) {
+                    foreach (Siccity.XNode.NodePort output in node.Outputs) {
                         //Check if port rect is available
                         if (!portConnectionPoints.ContainsKey(output)) continue;
                         Rect r = GridToWindowRect(portConnectionPoints[output]);
