@@ -105,13 +105,46 @@ namespace Siccity.XNode {
             if (direction == IO.Input) return null;
             return node.GetValue(this);
         }
+        public float GetOutputValueAsFloat()
+        {
+            if (direction == IO.Input) return 0;
+            return node.GetValueAsFloat(this);
+        }
+		public int GetOutputValueAsInt()
+		{
+			if (direction == IO.Input) return 0;
+			return node.GetValueAsInt(this);
+        }
+		public bool GetOutputValueAsBool()
+		{
+			if (direction == IO.Input) return false;
+			return node.GetValueAsBool(this);
+        }
 
         /// <summary> Return the output value of the first connected port. Returns null if none found or invalid.</summary>
         /// <returns> <see cref="NodePort.GetOutputValue"/> </returns>
         public object GetInputValue() {
             NodePort connectedPort = Connection;
-            if (connectedPort == null) return null;
+			if (connectedPort == null) return null;
             return connectedPort.GetOutputValue();
+        }
+		public float GetInputValueAsFloat()
+		{
+            NodePort connectedPort = Connection;
+			if (connectedPort == null) return 0;
+			return connectedPort.GetOutputValueAsFloat();
+        }
+		public bool GetInputValueAsBool()
+		{
+            NodePort connectedPort = Connection;
+			if (connectedPort == null) return false;
+			return connectedPort.GetOutputValueAsBool();
+        }
+		public int GetInputValueAsInt()
+		{
+			NodePort connectedPort = Connection;
+            if (connectedPort == null) return 0;
+			return connectedPort.GetOutputValueAsInt();
         }
 
         /// <summary> Return the output values of all connected ports. </summary>

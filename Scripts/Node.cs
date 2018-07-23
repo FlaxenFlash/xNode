@@ -168,8 +168,37 @@ namespace Siccity.XNode {
         /// <param name="fallback">If no ports are connected, this value will be returned</param>
         public T GetInputValue<T>(string fieldName, T fallback = default(T)) {
             NodePort port = GetPort(fieldName);
-            if (port != null && port.IsConnected) return port.GetInputValue<T>();
-            else return fallback;
+	        T value;
+            if (port != null && port.IsConnected) value = port.GetInputValue<T>();
+            else value = fallback;
+	        return value;
+        }
+
+        public float GetInputValueAsFloat(string fieldName, float fallback = 0) {
+
+            NodePort port = GetPort(fieldName);
+	        float value;
+            if (port != null && port.IsConnected) value = port.GetInputValueAsFloat();
+            else value = fallback;
+	        return value;
+        }
+
+        public int GetInputValueAsInt(string fieldName, int fallback = 0) {
+
+            NodePort port = GetPort(fieldName);
+	        int value;
+            if (port != null && port.IsConnected) value = port.GetInputValueAsInt();
+            else value = fallback;
+	        return value;
+        }
+
+        public bool GetInputValueAsBool(string fieldName, bool fallback = false) {
+
+            NodePort port = GetPort(fieldName);
+	        bool value;
+            if (port != null && port.IsConnected) value = port.GetInputValueAsBool();
+            else value = fallback;
+	        return value;
         }
 
         /// <summary> Return all input values for a specified port. Returns fallback value if no ports are connected </summary>
@@ -186,6 +215,18 @@ namespace Siccity.XNode {
         public virtual object GetValue(NodePort port) {
             Debug.LogWarning("No GetValue(NodePort port) override defined for " + GetType());
             return null;
+        }
+        public virtual float GetValueAsFloat(NodePort port)
+        {
+	        return (float)GetValue(port);
+        }
+        public virtual int GetValueAsInt(NodePort port)
+        {
+	        return (int)GetValue(port);
+        }
+        public virtual bool GetValueAsBool(NodePort port)
+        {
+	        return (bool)GetValue(port);
         }
 #endregion
 
